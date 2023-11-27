@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Web Server",
+            "type": "shell",
+            "command": "echo Coming soon...",
+            "presentation": {"echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": true},
+        },
+        {
+            "label": "Run Windows Local Demo",
+            "type": "shell",
+            "command": "echo Coming soon...",
+            "presentation": {"echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": true},
+        },
+    ]
+}
