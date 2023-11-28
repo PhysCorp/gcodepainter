@@ -77,6 +77,9 @@ if "help" in arguments:
     print("=== END MarbleMachine HELP ===")
     quit()
 
+
+
+
 # Get the input filename
 try:
     program_input_filename = arguments["input"]
