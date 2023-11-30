@@ -32,6 +32,8 @@ try:
     from rich import print as rich_print # Pretty print
     from rich.traceback import install # Pretty traceback
     install() # Install traceback
+    from autoclass import AutoClass # Main class
+    from webui import WebUI # WebUI class
 except ImportError as e:
     print("[ERROR] You are missing one or more libraries. Please use PIP to install any missing libraries.")
     print("Try running `python3 -m pip install -r requirements.txt`")
@@ -114,7 +116,7 @@ if __name__ == "__main__":
                 return default_val
     
     # TODO: Remove the variable names and switch to a dictionary
-        
+    
     # Parse all arguments
     program_input_filename = parse_arg(opts_dict, "input", arguments["input"], "", required=True)
     program_output_filename = parse_arg(opts_dict, "output", arguments["output"], "output.gcode")
@@ -139,3 +141,19 @@ if __name__ == "__main__":
 
     # Display all arguments in console
     print(f"Arguments: \n{opts_dict}")
+
+    # [ Run the program ]
+    # If show_webui enabled, then run the webui interface
+    # Otherwise, run the program via command line and opencv interface
+    if show_webui:
+        print("[INFO]: WebUI enabled, running webui...")
+        webui = WebUI()
+        webui.run()
+    else:
+        print("[INFO]: WebUI disabled, running program...")
+        auto = AutoClass(pi_mode, input_pin, maindirectory, program_input_filename, program_output_filename, camera_number, program_display, program_camera_bounds, program_initial_speed, program_initial_acceleration, program_border_x, program_border_y, program_maximum_x, program_maximum_y, program_debug, program_dwell_time, print_flag)
+        try:
+            auto.run()
+        except KeyboardInterrupt:
+            print("[INFO]: Keyboard interrupt detected, exiting...")
+            auto.cleanup()
