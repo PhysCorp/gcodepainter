@@ -31,6 +31,8 @@
 
 Additional commands and documentation are available with `python3 main.py --help`.
 
+Try out our Task Runner support! [image]
+
 ### Alternate Instructions using virtualenv
 Create a new virtualenv with `python3 -m venv venv`.
 Activate the virtualenv with `source venv/bin/activate`.

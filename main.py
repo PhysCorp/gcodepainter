@@ -32,10 +32,11 @@ try:
     from rich import print as rich_print # Pretty print
     from rich.traceback import install # Pretty traceback
     install() # Install traceback
-    from autoclass import AutoClass # Main class
-    from webui import WebUI # WebUI class
+    from python.autoclass import AutoClass # Main class
+    from python.webui import WebUI # WebUI class
 except ImportError as e:
-    print("[ERROR] You are missing one or more libraries. Please use PIP to install any missing libraries.")
+    print("[INFO] You are missing one or more libraries. Please use PIP to install any missing libraries.")
+    print("In addition, make sure you are running Python 3.8")
     print("Try running `python3 -m pip install -r requirements.txt`")
     print(f"Traceback: {e}")
     quit()
@@ -45,13 +46,16 @@ maindirectory = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
 # Custom low-level functions
 def print(text="", log_filename="", end="\n", max_file_mb=10):
-    if log_filename != "":
-        log_file_path = os.path.join(maindirectory, "logs", log_filename)
-        if os.path.exists(log_file_path) and os.path.getsize(log_file_path) > max_file_mb * 1024 * 1024:
-            with open(log_file_path, "w") as f:
-                f.write("")
-        with open(log_file_path, "a") as f:
-            f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {text}")
+    global maindirectory
+    script_name = os.path.splitext(os.path.basename(__file__))[0]
+    if log_filename == "":
+        log_filename = f"{script_name}.log"
+    log_file_path = os.path.join(maindirectory, "logs", log_filename)
+    if os.path.exists(log_file_path) and os.path.getsize(log_file_path) > max_file_mb * 1024 * 1024:
+        with open(log_file_path, "w") as f:
+            f.write("")
+    with open(log_file_path, "a") as f:
+        f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {text}")
     rich_print(text, end=end)
 
 # [ MAIN ]
@@ -83,7 +87,7 @@ if __name__ == "__main__":
                 value = value.split("=")
                 arguments[value[0]] = value[1]
     except IndexError:
-        print(log_filename="errors.log", text="[ERROR]: No arguments were provided. You must provide arguments in the format of `argument=value`")
+        print(log_filename="errors.log", text="[red][ERROR][/red]: No arguments were provided. You must provide arguments in the format of `argument=value`")
         print(log_filename="errors.log", text="Example: `python3 main.py input=\"FULL_PATH_TO_IMAGE.png\" output=\"FULL_PATH_TO_OUTPUT.gcode\"`")
         print(log_filename="errors.log", text="Please see the README for more info, or try `python3 main.py --help`")
         quit()
@@ -99,7 +103,7 @@ if __name__ == "__main__":
         print("output: The output filename. This is required.")
         print("help: Displays this help message.")
         quit()
-    
+
     # Parse the arguments
     opts_dict = {}
     def parse_arg(opts_dict, arg_key, arg_val, default_val="", required=False):
@@ -108,52 +112,67 @@ if __name__ == "__main__":
             return arg_val
         except KeyError:
             if required:
-                print(f"[ERROR]: No {arg_key} was provided. This is a required argument. Please see `python3 main.py --help` for more info.")
+                print(f"[red][ERROR][/red]: No {arg_key} was provided. This is a required argument. Please see `python3 main.py --help` for more info.")
                 quit()
             else:
-                print(f"[INFO]: No {arg_key} was provided. Assuming value of `{default_val}`.")
+                print(f"[gold1][INFO][/gold1]: No {arg_key} was provided. Assuming value of `{default_val}`.")
                 opts_dict[arg_key] = default_val
                 return default_val
     
-    # TODO: Remove the variable names and switch to a dictionary
-    
     # Parse all arguments
-    program_input_filename = parse_arg(opts_dict, "input", arguments["input"], "", required=True)
-    program_output_filename = parse_arg(opts_dict, "output", arguments["output"], "output.gcode")
-    program_maximum_x = int(parse_arg(opts_dict, "maximum_x", arguments["maximum_x"], 613))
-    program_maximum_y = int(parse_arg(opts_dict, "maximum_y", arguments["maximum_y"], 548))
-    program_initial_speed = int(parse_arg(opts_dict, "initial_speed", arguments["initial_speed"], 50000))
-    program_border_x = int(parse_arg(opts_dict, "border_x", arguments["border_x"], 50))
-    program_border_y = int(parse_arg(opts_dict, "border_y", arguments["border_y"], 50))
-    program_debug = bool(parse_arg(opts_dict, "debug", arguments["debug"], False))
-    program_display = bool(parse_arg(opts_dict, "display", arguments["display"], False))
-    program_dwell_time = int(parse_arg(opts_dict, "dwell_time", arguments["dwell_time"], 10000))
-    program_initial_acceleration = int(parse_arg(opts_dict, "acceleration", arguments["acceleration"], 1000))
-    camera_number = int(parse_arg(opts_dict, "camera_number", arguments["camera_number"], 0))
-    pi_mode = bool(parse_arg(opts_dict, "pi_mode", arguments["pi_mode"], False))
-    input_pin = int(parse_arg(opts_dict, "input_pin", arguments["input_pin"], 17 if pi_mode else None))
-    print_flag = bool(parse_arg(opts_dict, "execute", arguments["execute"], False))
-    show_webui = bool(parse_arg(opts_dict, "webui", arguments["webui"], False))
-    program_camera_bounds = parse_arg(opts_dict, "camera_bounds", arguments["camera_bounds"], "(0,0)(0,0)")
-    
-    # Convert camera bounds to the format of "(0,0)(0,0)" to [[0,0],[0,0]]
-    program_camera_bounds = [[int(coord) for coord in program_camera_bounds.replace("(", "").replace(")", ",").split(",")] for program_camera_bounds in program_camera_bounds.split(")(")]
+    parse_arg(opts_dict, "input", arguments.get("input", ""), "", required=True)
+    parse_arg(opts_dict, "output", arguments.get("output", "output.gcode"))
+    parse_arg(opts_dict, "maximum_x", arguments.get("maximum_x", 613))
+    parse_arg(opts_dict, "maximum_y", arguments.get("maximum_y", 548))
+    parse_arg(opts_dict, "initial_speed", arguments.get("initial_speed", 50000))
+    parse_arg(opts_dict, "border_x", arguments.get("border_x", 50))
+    parse_arg(opts_dict, "border_y", arguments.get("border_y", 50))
+    parse_arg(opts_dict, "debug", arguments.get("debug", False))
+    parse_arg(opts_dict, "display", arguments.get("display", False))
+    parse_arg(opts_dict, "dwell_time", arguments.get("dwell_time", 10000))
+    parse_arg(opts_dict, "acceleration", arguments.get("acceleration", 1000))
+    parse_arg(opts_dict, "camera_number", arguments.get("camera_number", 0))
+    parse_arg(opts_dict, "pi_mode", arguments.get("pi_mode", False))
+    parse_arg(opts_dict, "input_pin", arguments.get("input_pin", 17 if opts_dict.get("pi_mode", False) else 0))
+    parse_arg(opts_dict, "execute", arguments.get("execute", False))
+    parse_arg(opts_dict, "webui", arguments.get("webui", False))
+    parse_arg(opts_dict, "camera_bounds", arguments.get("camera_bounds", "(0,0)(0,0)"))
 
     # Display all arguments in console
-    print(f"Arguments: \n{opts_dict}")
+    print(f"Arguments: {opts_dict}")
 
     # [ Run the program ]
     # If show_webui enabled, then run the webui interface
     # Otherwise, run the program via command line and opencv interface
-    if show_webui:
-        print("[INFO]: WebUI enabled, running webui...")
-        webui = WebUI()
-        webui.run()
+    if opts_dict.get("webui", False):
+        print("[gold1][INFO][/gold1]: WebUI enabled, running webui...")
+        # webui = WebUI()
+        # webui.run()
     else:
-        print("[INFO]: WebUI disabled, running program...")
-        auto = AutoClass(pi_mode, input_pin, maindirectory, program_input_filename, program_output_filename, camera_number, program_display, program_camera_bounds, program_initial_speed, program_initial_acceleration, program_border_x, program_border_y, program_maximum_x, program_maximum_y, program_debug, program_dwell_time, print_flag)
-        try:
-            auto.run()
-        except KeyboardInterrupt:
-            print("[INFO]: Keyboard interrupt detected, exiting...")
-            auto.cleanup()
+        print("[gold1][INFO][/gold1]: WebUI disabled, running program in standalone mode...")
+    
+    # Create the AutoClass object
+    auto_obj = AutoClass(opts_dict)
+    try:
+        # Run routine to capture, convert, and create gcode
+        print("BRUH")
+    except KeyboardInterrupt:
+        print("[gold1][INFO][/gold1]: Keyboard interrupt detected, exiting...")
+        auto_obj.cleanup()
+
+
+
+
+
+
+
+# if program_input_filename != "":
+#                 if pi_mode:
+#                     # Wait for button press from GPIO pin 17
+#                     print("[INFO]: Press the button to convert another image, or [bright_red]CTRL+C[/bright_red] to exit.")
+#                     GPIO.wait_for_edge(input_pin, GPIO.FALLING)
+#                 else:
+#                     # Wait for user input
+#                     print("[INFO]: Press [bright_yellow]ENTER[/bright_yellow] to convert another image, or [bright_red]CTRL+C[/bright_red] to exit.")
+#                     input()
+#                 print()
