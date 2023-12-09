@@ -1,3 +1,4 @@
 logs/*
 private
 temp/*
+python/__pycache__

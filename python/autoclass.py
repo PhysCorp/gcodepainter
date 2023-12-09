@@ -72,15 +72,27 @@ class AutoClass:
         # If pi_mode is set, import GPIO and set the pins
         if self.pi_mode:
             print("[purple4][AUTOCLASS][/purple4] Initializing GPIO...")
-            import RPi.GPIO as GPIO
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            try:
+                import RPi.GPIO as GPIO
+                GPIO.setmode(GPIO.BCM)
+                GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            except Exception as e:
+                print(f"[red][ERROR][/red] Failed to initialize GPIO. Are you running this on a Pi? Traceback: {e}")
+                quit()
         
     # Cleanup function to be called when the program is exiting
     def cleanup(self):
         if self.pi_mode:
-            import RPi.GPIO as GPIO
-            GPIO.cleanup()
+            try:
+                import RPi.GPIO as GPIO
+                GPIO.cleanup()
+            except Exception as e:
+                print(f"[red][ERROR][/red] Failed to cleanup GPIO. Are you running this on a Pi? Traceback: {e}")
+                quit()
+    
+    # Function to return contents of a variable
+    def get_prefs(self, var):
+        return self.opts_dict.get(var, None)
     
     # Function to get whether or not an image is ready at the program_input_filename
     def is_image_ready(self):
@@ -165,7 +177,7 @@ class AutoClass:
         print("[purple4][AUTOCLASS][/purple4] Image converted to grayscale.")
 
     # Convert image to black and white
-    def black_and_white_image(self):
+    def invert_image(self):
         print("[purple4][AUTOCLASS][/purple4] Converting image to black and white...")
         self.image = cv2.bitwise_not(self.image)
         print("[purple4][AUTOCLASS][/purple4] Image converted to black and white.")

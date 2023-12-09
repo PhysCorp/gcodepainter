@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# [ Structure of my code ]
+# main.py: The main file that runs the program
+# autoclass.py: The main class that handles all of the image processing and gcode generation
+# webui.py: The webui class that handles the web interface
+
 # TODO: Package this in Flask app
 
 # TODO: Use Flask to call auto function, as well as adjust parameters by updating JSON file
@@ -28,7 +33,7 @@
 
 # Attempt to import all necessary libraries
 try:
-    import os, time, sys # General
+    import os, time, sys, time # General
     from rich import print as rich_print # Pretty print
     from rich.traceback import install # Pretty traceback
     install() # Install traceback
@@ -61,7 +66,7 @@ def print(text="", log_filename="", end="\n", max_file_mb=10):
 # [ MAIN ]
 if __name__ == "__main__":
     # Print hello ASCII text
-    print("""
+    print("""[white]
                       _                  _       _            
                      | |                (_)     | |           
    __ _  ___ ___   __| | ___ _ __   __ _ _ _ __ | |_ ___ _ __ 
@@ -70,9 +75,15 @@ if __name__ == "__main__":
   \__, |\___\___/ \__,_|\___| .__/ \__,_|_|_| |_|\__\___|_|   
    __/ |                    | |                               
   |___/                     |_|                               
-""")
-    print("Welcome to gcodepainter, developed by Matt Curtis.")
-    print()
+[/white]""")
+    # Print my welcome text in cycling colors
+    welcome_text = "Welcome to gcodepainter, developed by Matt Curtis."
+    color_cycling = ["red", "orange1", "yellow", "green", "blue", "blue_violet", "violet"]
+    for i, letter in enumerate(welcome_text):
+        rich_print(f"[{color_cycling[i % len(color_cycling)]}]{letter}[/{color_cycling[i % len(color_cycling)]}]", end="")
+        time.sleep(0.01)
+    print("\n")
+    time.sleep(1)
 
     # Get arguments from kwargs
     try:
@@ -139,7 +150,7 @@ if __name__ == "__main__":
     parse_arg(opts_dict, "camera_bounds", arguments.get("camera_bounds", "(0,0)(0,0)"))
 
     # Display all arguments in console
-    print(f"Arguments: {opts_dict}")
+    print(f"Arguments: {opts_dict}\n")
 
     # [ Run the program ]
     # If show_webui enabled, then run the webui interface
@@ -151,28 +162,93 @@ if __name__ == "__main__":
     else:
         print("[gold1][INFO][/gold1]: WebUI disabled, running program in standalone mode...")
     
-    # Create the AutoClass object
-    auto_obj = AutoClass(opts_dict)
-    try:
-        # Run routine to capture, convert, and create gcode
-        print("BRUH")
-    except KeyboardInterrupt:
-        print("[gold1][INFO][/gold1]: Keyboard interrupt detected, exiting...")
-        auto_obj.cleanup()
-
-
-
-
-
-
-
-# if program_input_filename != "":
-#                 if pi_mode:
-#                     # Wait for button press from GPIO pin 17
-#                     print("[INFO]: Press the button to convert another image, or [bright_red]CTRL+C[/bright_red] to exit.")
-#                     GPIO.wait_for_edge(input_pin, GPIO.FALLING)
-#                 else:
-#                     # Wait for user input
-#                     print("[INFO]: Press [bright_yellow]ENTER[/bright_yellow] to convert another image, or [bright_red]CTRL+C[/bright_red] to exit.")
-#                     input()
-#                 print()
+    while True:
+        # Create the AutoClass object
+        auto_obj = AutoClass(opts_dict)
+        try:
+            # Run routine to capture, convert, and create gcode
+            # Make sure that an output filename is configured
+            if not auto_obj.is_output_configured():
+                print("[red][ERROR][/red]: No output filename was provided. Please see `python3 main.py --help` for more info.")
+                quit()
+            # Check if there is an image already ready from input
+            if not auto_obj.is_image_ready():
+                # If not, then capture an image
+                auto_obj.get_image()
+            # Import the image
+            auto_obj.import_image()
+            # Show the initial image
+            auto_obj.display_image(window_name="Initial Image")
+            # Rotate the image 180 degrees (we mounted camera upside down)
+            auto_obj.rotate_image()
+            # Display the image progress
+            auto_obj.display_image(window_name="Flipped Image")
+            # Crop the image based on camera bounds
+            auto_obj.crop_image()
+            # Display the image progress
+            auto_obj.display_image(window_name="Cropped Image")
+            # Convert the image to grayscale
+            auto_obj.convert_to_grayscale()
+            # Display the image progress
+            auto_obj.display_image(window_name="Grayscale Image")
+            # Invert the image
+            auto_obj.invert_image()
+            # Display the image progress
+            auto_obj.display_image(window_name="Inverted Image")
+            # Threshold the image
+            auto_obj.threshold_image()
+            # Display the image progress
+            auto_obj.display_image(window_name="Thresholded Image")
+            # Convert the image to a fixed size
+            auto_obj.resize_image_fixed(width=1000, height=1000)
+            # Display the image progress
+            auto_obj.display_image(window_name="Resized Image")
+            # Apply Euclidean distance transform
+            distance_map = auto_obj.get_distance_map()
+            # Display the image progress
+            auto_obj.display_image(window_name="Distance Transform")
+            # Normalize distance map
+            auto_obj.normalize_distance_map()
+            # Display the image progress
+            auto_obj.display_image(window_name="Normalized Distance Transform")
+            # Use thinning method to get skeleton of the image
+            skel = auto_obj.get_skeleton()
+            # Display the image progress
+            auto_obj.display_image(window_name="Skeleton")
+            # "Solve" the skeleton by finding adjacent points
+            solved_pixels = auto_obj.solve_pixels()
+            # Get the gcode from the solved pixels
+            gcode = auto_obj.get_gcode(solved_pixels)
+            # Write the gcode to the output file
+            auto_obj.write_gcode(gcode)
+            # If get_prefs("execute") is enabled, then we print the gcode using Pronterface
+            # NOTE: PRONTERFACE ONLY WORKS ON WINDOWS
+            if auto_obj.get_prefs("execute"):
+                auto_obj.print_gcode()
+            # Ask user if they want to convert another image
+            if auto_obj.get_prefs("pi_mode"):
+                # Wait for button press from GPIO pin 17
+                print("[INFO]: Press the button to convert another image, or [bright_red]CTRL+C[/bright_red] to exit.")
+                try:
+                    GPIO.wait_for_edge(auto_obj.get_prefs("input_pin"), GPIO.FALLING)
+                except Exception as e:
+                    print(f"[ERROR]: {e}")
+                    print("[INFO]: You may not be running this on a Pi, or you may not have the GPIO library installed. Exiting...")
+                    auto_obj.cleanup()
+                    quit()
+            else:
+                # Wait for user input
+                print("[INFO]: Do you want to convert another image? [bright_red]Y[/bright_red]/[bright_red]N[/bright_red]")
+                response = input()
+                if response.lower() != "y":
+                    print("[gold1][INFO][/gold1]: Exiting...")
+                    auto_obj.cleanup()
+                    quit()
+            # Cleanup and run again (loop to beginning)
+            auto_obj.cleanup()
+        except KeyboardInterrupt:
+            print("[gold1][INFO][/gold1]: Keyboard interrupt detected, exiting...")
+            auto_obj.cleanup()
+        # Delete the AutoClass object and loop
+        del auto_obj
+        print("[gold1][INFO][/gold1]: Restarting program...")
