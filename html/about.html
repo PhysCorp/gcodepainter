@@ -8,7 +8,7 @@
     <meta name="description" content="RC" />
     <meta name="author" content="Matt Curtis" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
-    <title>gcodepainter - About the Developer</title>
+    <title>gcodepainter - About the Project</title>
     <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
     <!-- <script src="js/feather.min.js"></script> -->
@@ -58,7 +58,7 @@
                         <a class="nav-link" aria-current="page" href="index.html">🏠 Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="about.html">🐱 About the Developer</a>
+                        <a class="nav-link active" href="about.html">🧰 About the Project</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="demo.html?task=1">🖨️ Run Demo</a>
@@ -70,7 +70,7 @@
 
     <!-- Body Title & Setup -->
     <h2 class="text-center" style="padding-top: 75px;"><i data-feather="user"></i>
-        Meet the Developer!</h2>
+        About the Project!</h2>
     <div class="row align-items-md-stretch" style="padding-top: 6px; padding-bottom: 6px;">
         <div class="col-md-12">
 
@@ -78,19 +78,14 @@
             <div class="row align-items-md-stretch" id="content" name="content">
                 <div class="col-md-12">
                     <div class="h-100 p-4 bg-dark rounded-3">
-                        <h2 style="margin-top: 3rem;">👋 Main heading</h2>
+                        <h2 style="margin-top: 3rem;">🖌️ gcodepainter</h2>
                         <p class="lead">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium earum sit ad neque iste eligendi dicta accusantium possimus, molestias, temporibus consectetur nihil odio illum? Dolorem iusto culpa aperiam cumque iure.
+                            A simple tool to convert PNG images to GCODE for plotting machines
                         </p>
-                        <hr>
-                        <h2>📖 Secondary heading</h2>
-                        <p class="lead">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo autem pariatur odio eligendi veritatis molestias sapiente libero ipsa voluptatibus dicta eaque a, aliquam quisquam voluptates exercitationem id eius repellendus eos.
-                        </p>
-                        <hr>
-                        <h2>🤔 Tertiary heading</h2>
-                        <p class="lead">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo, incidunt temporibus? Consectetur commodi delectus quis dolorem totam. Nobis temporibus quae incidunt eveniet impedit vel commodi, quam minus, pariatur animi assumenda?
+                        <!-- Badges -->
+                        <p>
+                            <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+                            <img src="https://img.shields.io/badge/python-3.8-blue.svg" alt="Python 3.8">
                         </p>
                     </div>
                 </div>
@@ -99,20 +94,27 @@
             <div class="row align-items-md-stretch" id="content2" name="content2">
                 <div class="col-md-12">
                     <div class="h-100 p-4 bg-dark rounded-3">
-                        <h2 style="margin-top: 3rem;">👋 Fourth heading</h2>
-                        <p class="lead">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse enim quisquam iusto odio, commodi molestias quae iure doloremque, similique velit impedit laboriosam iste earum cupiditate eius unde ullam incidunt at!
-                        </p>
-                        <hr>
-                        <h2>📖 Fifth heading</h2>
-                        <p class="lead">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure velit unde sit adipisci dolor pariatur veniam ex dolores reprehenderit! Sunt nostrum ea doloribus? Modi fuga quas officia minima, quidem ullam.
-                        </p>
-                        <hr>
-                        <h2>🤔 Sixth heading</h2>
-                        <p class="lead">
-                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Suscipit vitae quibusdam corporis, placeat repudiandae, optio aut hic incidunt fugiat totam aliquam. Alias vero, quas dolores facere possimus necessitatibus praesentium molestiae?
-                        </p>
+                        <h2 style="margin-top: 3rem;">🐍 Environment info (conda)</h2>
+                        <p>This project utilizes conda to manage the environment. To create the environment, run 
+                            <code>conda create --name gcodepainter python=3.8</code> and activate the environment with 
+                            <code>conda activate gcodepainter</code>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-md-stretch" id="content3" name="content3">
+                <div class="col-md-12">
+                    <div class="h-100 p-4 bg-dark rounded-3">
+                        <h2 style="margin-top: 3rem;">🔍 Required dependencies</h2>
+                        <p>The following dependencies are required to run this project (included in <code>requirements.txt</code>):</p>
+                        <ul>
+                        <li>Python 3.8 (this is SPECIFICALLY required to ensure compatibility)</li>
+                        <li>rich</li>
+                        <li>opencv-python</li>
+                        <li>numpy</li>
+                        <li>opencv-contrib-python</li>
+                        <li>flask</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -120,20 +122,21 @@
             <div class="row align-items-md-stretch" id="bottom-elem" name="bottom-elem">
                 <div class="col-md-12">
                     <div class="h-100 p-4 bg-dark rounded-3">
-                        <h2 style="margin-top: 3rem;">👋 Seventh heading</h2>
-                        <p class="lead">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui enim ad, nulla cum tenetur itaque veniam. Debitis laboriosam quasi maiores sed non magnam numquam doloremque assumenda eveniet suscipit, cumque labore?
-                        </p>
-                        <hr>
-                        <h2>📖 Eighth heading</h2>
-                        <p class="lead">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi quo ad earum sunt. Exercitationem nihil quia aut, reprehenderit quisquam perferendis, optio, ducimus vel consequatur neque repudiandae commodi doloribus. Dolorum, aut?
-                        </p>
-                        <hr>
-                        <h2>🤔 Ninth heading</h2>
-                        <p class="lead">
-                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt dicta, odio officia obcaecati autem consequuntur magni excepturi quisquam dolores, a commodi tenetur et. Quidem eum odit, voluptatibus facilis ad aspernatur.
-                        </p>
+                        <h2 style="margin-top: 3rem;">🖥️ Other info and installation</h2>
+                        <p>This project is currently in development. Please clone the git repository with 
+                            <code>git clone https://github.com/PhysCorp/gcodepainter.git</code>.</p>
+                            <ol>
+                                <li>Ensure that python3, python3-pip, and anaconda are installed on your system. Anaconda can be retrieved from 
+                                <a href="https://www.anaconda.com/products/individual">here</a>. If you are on Windows, you can install anaconda with 
+                                <a href="https://chocolatey.org/">chocolatey</a> using <code>choco install anaconda3</code>.</li>
+                                <li>Create a conda environment with <code>conda create --name gcodepainter python=3.8</code>.</li>
+                                <li>Activate the conda environment with <code>conda activate gcodepainter</code>.</li>
+                                <li>Install the requirements with <code>python3 -m pip install -r requirements.txt</code>.</li>
+                                <li>Run <code>python3 main.py</code> to start the program. Here is an example command:
+                                <code>python3 main.py --display --camera_bounds="(150,60)(515,435)" --execute</code></li>
+                            </ol>
+                            <p>Additional commands and documentation are available with <code>python3 main.py --help</code>.</p>
+                            <p><em>Coming soon: Task Runner support!</em></p>
                     </div>
                 </div>
             </div>

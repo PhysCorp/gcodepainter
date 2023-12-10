@@ -28,10 +28,18 @@ def print(text="", log_filename="", end="\n", max_file_mb=10):
         log_filename = f"{script_name}.log"
     log_file_path = os.path.join(maindirectory, "logs", log_filename)
     if os.path.exists(log_file_path) and os.path.getsize(log_file_path) > max_file_mb * 1024 * 1024:
-        with open(log_file_path, "w") as f:
-            f.write("")
-    with open(log_file_path, "a") as f:
-        f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {text}\n")
+        try:
+            with open(log_file_path, "w") as f:
+                f.write("")
+        except Exception as e:
+            rich_print(f"[red][ERROR][/red]: {e}")
+            rich_print(f"[red][ERROR][/red]: Could not clear log file at {log_file_path}.")
+    try:
+        with open(log_file_path, "a") as f:
+            f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {text}\n")
+    except Exception as e:
+        rich_print(f"[red][ERROR][/red]: {e}")
+        rich_print(f"[red][ERROR][/red]: Could not clear log file at {log_file_path}.")
     rich_print(text, end=end)
 
 # Define the class itself
@@ -234,6 +242,7 @@ class AutoClass:
         print("[purple4][AUTOCLASS][/purple4] Normalizing distance map...")
         cv2.normalize(self.distance_map, self.distance_map, 0, 255, cv2.NORM_MINMAX)
         print("[purple4][AUTOCLASS][/purple4] Distance map normalized.")
+        return self.distance_map
     
     # Use thinning method to get skeleton of the image
     def get_skeleton(self):
@@ -363,8 +372,12 @@ class AutoClass:
     # Write gcode to file
     def write_gcode(self, gcode):
         print("[purple4][AUTOCLASS][/purple4] Writing gcode to file...")
-        with open(self.program_output_filename, "w") as f:
-            f.write(gcode)
+        try:
+            with open(self.program_output_filename, "w") as f:
+                f.write(gcode)
+        except Exception as e:
+            print(f"[red][ERROR][/red] Failed to write gcode to file. Traceback: {e}")
+            quit()
         print(f"[purple4][AUTOCLASS][/purple4] Gcode written to \"{self.program_output_filename}\"")
     
     # Print gcode by opening Pronterface

@@ -58,7 +58,7 @@
                         <a class="nav-link" aria-current="page" href="index.html">🏠 Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="about.html">🐱 About the Developer</a>
+                        <a class="nav-link" href="about.html">🧰 About the Project</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="demo.html?task=1">🖨️ Run Demo</a>
@@ -183,6 +183,28 @@
     <script>
         // Set the page zoom to 80%
         document.body.style.zoom = "80%"
+    </script>
+    <script>
+        // Any time the user clicks on an "A" record, show a loading spinner
+        const aTags = document.getElementsByTagName("a");
+        for (const aTag of aTags) {
+            aTag.addEventListener("click", function () {
+                // Check if target of record isn't "_blank" and if href isn't javascript:void(0)
+                if (aTag.target != "_blank" && aTag.href != "javascript:void(0)" && aTag.classList.contains("no-load") == false) {
+                    // Draw a loading spinner on top of everything else, with all-white background
+                    var spinner = document.createElement("div");
+                    spinner.setAttribute("id", "spinner");
+                    spinner.setAttribute("style", "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: black; z-index: 9999;");
+                    document.body.appendChild(spinner);
+                    // Draw the text "Loading..." on top of the spinner
+                    var spinnerText = document.createElement("div");
+                    spinnerText.setAttribute("id", "spinnerText");
+                    spinnerText.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; color: white; font-size: 32px; font-weight: 900;");
+                    spinnerText.innerHTML = "Loading...";
+                    document.body.appendChild(spinnerText);
+                }
+            });
+        }
     </script>
 </body>
 

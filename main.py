@@ -51,10 +51,18 @@ def print(text="", log_filename="", end="\n", max_file_mb=10):
         log_filename = f"{script_name}.log"
     log_file_path = os.path.join(maindirectory, "logs", log_filename)
     if os.path.exists(log_file_path) and os.path.getsize(log_file_path) > max_file_mb * 1024 * 1024:
-        with open(log_file_path, "w") as f:
-            f.write("")
-    with open(log_file_path, "a") as f:
-        f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {text}\n")
+        try:
+            with open(log_file_path, "w") as f:
+                f.write("")
+        except Exception as e:
+            rich_print(f"[red][ERROR][/red]: {e}")
+            rich_print(f"[red][ERROR][/red]: Could not clear log file at {log_file_path}.")
+    try:
+        with open(log_file_path, "a") as f:
+            f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {text}\n")
+    except Exception as e:
+        rich_print(f"[red][ERROR][/red]: {e}")
+        rich_print(f"[red][ERROR][/red]: Could not write to log file at {log_file_path}.")
     rich_print(text, end=end)
 
 # [ MAIN ]
@@ -113,6 +121,10 @@ if __name__ == "__main__":
     opts_dict = {}
     def parse_arg(opts_dict, arg_key, arg_val, default_val="", required=False):
         try:
+            if str(arg_val).lower() == "true":
+                arg_val = True
+            elif str(arg_val).lower() == "false":
+                arg_val = False
             opts_dict[arg_key] = arg_val
             return arg_val
         except KeyError:
@@ -125,23 +137,23 @@ if __name__ == "__main__":
                 return default_val
     
     # Parse all arguments
-    parse_arg(opts_dict, "input", arguments.get("input", "input.png"), "", required=True)
-    parse_arg(opts_dict, "output", arguments.get("output", "output.gcode"))
-    parse_arg(opts_dict, "maximum_x", arguments.get("maximum_x", 613))
-    parse_arg(opts_dict, "maximum_y", arguments.get("maximum_y", 548))
-    parse_arg(opts_dict, "initial_speed", arguments.get("initial_speed", 50000))
-    parse_arg(opts_dict, "border_x", arguments.get("border_x", 50))
-    parse_arg(opts_dict, "border_y", arguments.get("border_y", 50))
+    parse_arg(opts_dict, "input", str(arguments.get("input", "input.png")), "", required=True)
+    parse_arg(opts_dict, "output", str(arguments.get("output", "output.gcode")))
+    parse_arg(opts_dict, "maximum_x", int(arguments.get("maximum_x", 613)))
+    parse_arg(opts_dict, "maximum_y", int(arguments.get("maximum_y", 548)))
+    parse_arg(opts_dict, "initial_speed", int(arguments.get("initial_speed", 50000)))
+    parse_arg(opts_dict, "border_x", int(arguments.get("border_x", 50)))
+    parse_arg(opts_dict, "border_y", int(arguments.get("border_y", 50)))
     parse_arg(opts_dict, "debug", arguments.get("debug", False))
     parse_arg(opts_dict, "display", arguments.get("display", False))
-    parse_arg(opts_dict, "dwell_time", arguments.get("dwell_time", 10000))
-    parse_arg(opts_dict, "acceleration", arguments.get("acceleration", 1000))
-    parse_arg(opts_dict, "camera_number", arguments.get("camera_number", 0))
+    parse_arg(opts_dict, "dwell_time", int(arguments.get("dwell_time", 10000)))
+    parse_arg(opts_dict, "acceleration", int(arguments.get("acceleration", 1000)))
+    parse_arg(opts_dict, "camera_number", int(arguments.get("camera_number", 0)))
     parse_arg(opts_dict, "pi_mode", arguments.get("pi_mode", False))
-    parse_arg(opts_dict, "input_pin", arguments.get("input_pin", 17 if opts_dict.get("pi_mode", False) else 0))
+    parse_arg(opts_dict, "input_pin", int(arguments.get("input_pin", 17 if opts_dict.get("pi_mode", False) else 0)))
     parse_arg(opts_dict, "execute", arguments.get("execute", False))
-    parse_arg(opts_dict, "webui", arguments.get("webui", False))
-    parse_arg(opts_dict, "camera_bounds", arguments.get("camera_bounds", "(0,0)(0,0)"))
+    parse_arg(opts_dict, "webui", arguments.get("webui", True))
+    parse_arg(opts_dict, "camera_bounds", str(arguments.get("camera_bounds", "(150,60)(515,435)")))
 
     # Display all arguments in console
     print(f"Arguments: {opts_dict}\n")
