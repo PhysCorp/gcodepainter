@@ -34,12 +34,45 @@ This project is currently in development. Please clone the git repository with `
 2. Create a conda environment with `conda create --name gcodepainter python=3.8`.
 3. Activate the conda environment with `conda activate gcodepainter`.
 4. Install the requirements with `python3 -m pip install -r requirements.txt`.
-5. Run `python3 main.py` to start the program. Here is an example command:
-```python3 main.py --display --camera_bounds="(150,60)(515,435)" --execute```
+5. Run `python3 main.py` to start the program. By default, it launches the Flask GUI, available at `http://localhost:5000/`.
+6. *(Optional)* To install Pronterface for direct printing to plotting machines, please follow the instructions [here](https://www.pronterface.com/). Pronterface standalone EXE must be placed in the `tools` directory, and named `pronterface.exe`.
+
+Here are some example commands to run the program:
+```bash
+# Run the program with the GUI with all defaults
+python3 main.py
+
+# Run in standalone mode with input filename = "test.png" in the temp folder, and output filename = "test.gcode" in the temp folder
+python3 main.py --webui=false --input="test.png" --output="test.gcode"
+```
 
 Additional commands and documentation are available with `python3 main.py --help`.
 
 *Coming soon: Task Runner support!*
+
+## Program defaults
+```bash
+input -> "input.png"
+output -> "output.gcode"
+maximum_x -> 613
+maximum_y -> 548
+initial_speed -> 50000
+border_x -> 50
+border_y -> 50
+debug -> False
+display -> False
+dwell_time -> 10000
+acceleration -> 1000
+camera_number -> 0
+pi_mode -> False
+input_pin -> 17 if "pi_mode" == False, else 0
+execute -> False
+webui -> True
+camera_bounds -> "(150,60)(515,435)"
+```
+
+## Note
+To view the generated GCODE, we include a link to view the GCODE on an open-source plotting webpage at https://nraynaud.github.io/webgcode/. `You are required to paste in the GCODE yourself.` Alternatively, you can download the GCODE file directly. This program also supports the ability to execute the GCODE directly to a plotting machine, if you have one connected to your computer and if you have `Pronterface` installed on your *WINDOWS* computer.
 
 ## Uninstall
 1. Deactivate the conda environment with `conda deactivate`.
