@@ -1,5 +1,19 @@
-# gcodepainter
+```
+                      _                  _       _            
+                     | |                (_)     | |           
+   __ _  ___ ___   __| | ___ _ __   __ _ _ _ __ | |_ ___ _ __ 
+  / _` |/ __/ _ \ / _` |/ _ \ '_ \ / _` | | '_ \| __/ _ \ '__|
+ | (_| | (_| (_) | (_| |  __/ |_) | (_| | | | | | ||  __/ |   
+  \__, |\___\___/ \__,_|\___| .__/ \__,_|_|_| |_|\__\___|_|   
+   __/ |                    | |                               
+  |___/                     |_|                               
+```
+
 ### A simple tool to convert PNG images to GCODE for plotting machines
+
+<!-- Badges -->
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 
 ## Environment Info (conda)
 This project utilizes conda to manage the environment. To create the environment, run `conda create --name gcodepainter python=3.8` and activate the environment with `conda activate gcodepainter`.
@@ -25,7 +39,7 @@ This project is currently in development. Please clone the git repository with `
 
 Additional commands and documentation are available with `python3 main.py --help`.
 
-Coming soon: Task Runner support!
+*Coming soon: Task Runner support!*
 
 ## Uninstall
 1. Deactivate the conda environment with `conda deactivate`.

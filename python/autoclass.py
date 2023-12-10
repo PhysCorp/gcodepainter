@@ -3,18 +3,17 @@
 
 # Attempt to import all necessary libraries
 try:
-    import os, sys, math, cv2, platform, time
-    import numpy as np
-    from rich import print as rich_print
-    from rich.traceback import install
-    install() # Install rich traceback
+    import os, time, sys, time, math, platform # General
+    import cv2 # OpenCV
+    from rich import print as rich_print # Pretty print
+    from rich.traceback import install # Pretty traceback
+    install() # Install traceback
 except ImportError as e:
-    print("[ERROR] You are missing one or more libraries. Please use PIP to install any missing libraries.")
+    print("[INFO] You are missing one or more libraries. Please use PIP to install any missing libraries.")
+    print("In addition, make sure you are running Python 3.8")
     print("Try running `python3 -m pip install -r requirements.txt`")
     print(f"Traceback: {e}")
     quit()
-
-# TODO: Set the proper default values
 
 # Determine the main project directory, for compatibility (the absolute path to this file, up one dir)
 maindirectory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..") 
@@ -30,7 +29,7 @@ def print(text="", log_filename="", end="\n", max_file_mb=10):
         with open(log_file_path, "w") as f:
             f.write("")
     with open(log_file_path, "a") as f:
-        f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {text}")
+        f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {text}\n")
     rich_print(text, end=end)
 
 # Define the class itself
@@ -42,28 +41,34 @@ class AutoClass:
         # Define the options dictionary
         self.opts_dict = opts_dict
 
+        # If any values are not set in the opts_dict, raise an error
+        for key, value in opts_dict.items():
+            if value == "":
+                print(f"[red][ERROR][/red] The value for {key} is not set. Please set it when instantiating the AutoClass class.")
+                quit()
+
         # Set program arguments
-        self.program_input_filename = self.opts_dict.get("input", "webcam_capture.png")
-        self.program_output_filename = self.opts_dict.get("output", "output.gcode")
-        self.program_maximum_x = int(self.opts_dict.get("maximum_x", 613))
-        self.program_maximum_y = int(self.opts_dict.get("maximum_y", 548))
-        self.program_initial_speed = int(self.opts_dict.get("initial_speed", 0))
-        self.program_border_x = int(self.opts_dict.get("border_x", 50))
-        self.program_border_y = int(self.opts_dict.get("border_y", 50))
-        self.program_debug = bool(self.opts_dict.get("debug", False))
-        self.program_display = bool(self.opts_dict.get("display", True))
-        self.program_dwell_time = int(self.opts_dict.get("dwell_time", 0))
-        self.program_initial_acceleration = int(self.opts_dict.get("acceleration", 0))
-        self.camera_number = int(self.opts_dict.get("camera_number", -1))
-        self.pi_mode = bool(self.opts_dict.get("pi_mode", False))
-        self.input_pin = int(self.opts_dict.get("input_pin", 17 if self.pi_mode else 0))
-        self.print_flag = bool(self.opts_dict.get("execute", False))
-        self.show_webui = bool(self.opts_dict.get("webui", False))
-        self.program_camera_bounds = self.opts_dict.get("camera_bounds", "(0,0)(0,0)")
+        self.program_input_filename = str(self.opts_dict['input'])
+        self.program_output_filename = str(self.opts_dict['output'])
+        self.program_maximum_x = int(self.opts_dict['maximum_x'])
+        self.program_maximum_y = int(self.opts_dict['maximum_y'])
+        self.program_initial_speed = int(self.opts_dict['initial_speed'])
+        self.program_border_x = int(self.opts_dict['border_x'])
+        self.program_border_y = int(self.opts_dict['border_y'])
+        self.program_debug = bool(self.opts_dict['debug'])
+        self.program_display = bool(self.opts_dict['display'])
+        self.program_dwell_time = int(self.opts_dict['dwell_time'])
+        self.program_initial_acceleration = int(self.opts_dict['acceleration'])
+        self.camera_number = int(self.opts_dict['camera_number'])
+        self.pi_mode = bool(self.opts_dict['pi_mode'])
+        self.input_pin = int(self.opts_dict['input_pin'])
+        self.print_flag = bool(self.opts_dict['execute'])
+        self.show_webui = bool(self.opts_dict['webui'])
+        self.program_camera_bounds = str(self.opts_dict['camera_bounds'])
 
         # Convert camera bounds to the format of "(0,0)(0,0)" to [[0,0],[0,0]]
-        self.program_camera_bounds = self.program_camera_bounds.replace("(", "").replace(")", "").split(")(")
-        self.program_camera_bounds = [[int(x) for x in y.split(",")] for y in self.program_camera_bounds]
+        temp_bounds = self.program_camera_bounds.replace(")(",",").replace("(","").replace(")","").split(",")
+        self.program_camera_bounds = [[int(temp_bounds[0]), int(temp_bounds[1])], [int(temp_bounds[2]), int(temp_bounds[3])]]
 
         # Set the full paths for input and output filenames
         self.program_input_filename = os.path.join(maindirectory, "temp", self.program_input_filename)
@@ -107,7 +112,9 @@ class AutoClass:
         if image is None:
             image = self.image
         if not self.show_webui and self.program_display:
-            cv2.imshow(window_name, image)
+            temp_resized_image = cv2.resize(image, (512, 512))
+            print(f"[gold1][INFO][/gold1]: Showing \"{window_name}\", press q to close.")
+            cv2.imshow(window_name, temp_resized_image)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         return image
@@ -136,8 +143,7 @@ class AutoClass:
                     print("[purple4][AUTOCLASS][/purple4] Displaying image...")
                     self.display_image(frame, "Captured Image")
                     print("[purple4][AUTOCLASS][/purple4] Image displayed.")
-                    print("[purple4][AUTOCLASS][/purple4] Does the image look good? [yellow]Y[/yellow]es/[yellow]N[/yellow]o")
-                    image_looks_good = input().lower() == "y"
+                    image_looks_good = input("[ASK] Does the image look good? Y/n ").lower() == "y"
                     if not image_looks_good:
                         print("[purple4][AUTOCLASS][/purple4] Retrying...")
                     else:
@@ -262,6 +268,8 @@ class AutoClass:
         print("[hot_pink3][SOLVING][/hot_pink3] Solving white pixels...")
         # Print progress bar with 50 hashtags
         print("[INFO]: Progress: [                                                 ]", end=f"\r[INFO]: Progress: [")
+        ii = 0
+        iii = len(white_pixels)
         for i in range(0, len(white_pixels)):
             # Get the current pixel
             current_pixel = solved_white_pixels[-1]
@@ -272,8 +280,8 @@ class AutoClass:
             # Loop through white_pixels, finding the closest pixel
             for j in range(0, len(white_pixels)):
                 # Print hashtags for progress bar based on len(white_pixels)*len(white_pixels) iterations, limited to 50
-                if len(white_pixels)*len(white_pixels) > 50:
-                    if (i*len(white_pixels) + j) % (len(white_pixels)*len(white_pixels) // 50) == 0:
+                if iii*iii > 50:
+                    if (ii*iii + j) % (iii*iii // 50) == 0:
                         print("#", end="")
                 # Get the distance between the current pixel and the current pixel in white_pixels
                 current_distance = math.sqrt(((white_pixels[j][0] - current_pixel[0]) ** 2) + ((white_pixels[j][1] - current_pixel[1]) ** 2))
@@ -285,6 +293,7 @@ class AutoClass:
             solved_white_pixels.append(white_pixels[closest_pixel_index])
             # Pop the closest pixel from the white_pixels list
             white_pixels.pop(closest_pixel_index)
+            ii += 1
         print("]")
         print("[hot_pink3][SOLVING][/hot_pink3] White pixels solved.")
         return solved_white_pixels
@@ -334,7 +343,7 @@ class AutoClass:
         print("[purple4][AUTOCLASS][/purple4] Writing gcode to file...")
         with open(self.program_output_filename, "w") as f:
             f.write(gcode)
-        print(f"[purple4][AUTOCLASS][/purple4] Gcode written to {self.program_output_filename}.")
+        print(f"[purple4][AUTOCLASS][/purple4] Gcode written to \"{self.program_output_filename}\"")
     
     # Print gcode by opening Pronterface
     # NOTE: This has only been tested on WINDOWS
