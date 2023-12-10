@@ -5,6 +5,7 @@
 try:
     import os, time, sys, time, math, platform # General
     import cv2 # OpenCV
+    import numpy as np # Numpy
     from rich import print as rich_print # Pretty print
     from rich.traceback import install # Pretty traceback
     install() # Install traceback
@@ -12,6 +13,7 @@ except ImportError as e:
     print("[INFO] You are missing one or more libraries. Please use PIP to install any missing libraries.")
     print("In addition, make sure you are running Python 3.8")
     print("Try running `python3 -m pip install -r requirements.txt`")
+    print("Note: This file cannot be run standalone. You must run `python3 main.py`")
     print(f"Traceback: {e}")
     quit()
 
@@ -106,6 +108,26 @@ class AutoClass:
     # Function to get whether output is configured
     def is_output_configured(self):
         return self.program_output_filename != ""
+
+    # Function to save the current image to the program_input_filename, with "_modified" appended to the end
+    def save_image(self, image=None):
+        if image is None:
+            image = self.image
+        print("[purple4][AUTOCLASS][/purple4] Saving image...")
+        # Get the current folder from the program_input_filename
+        current_folder = os.path.dirname(self.program_input_filename)
+        # Get the current filename from the program_input_filename
+        current_filename = os.path.basename(self.program_input_filename)
+        # Get the current filename without the extension
+        current_filename_without_extension = os.path.splitext(current_filename)[0]
+        # Get the current extension
+        current_extension = os.path.splitext(current_filename)[1]
+        # Get the new filename
+        new_filename = current_filename_without_extension + "_modified" + current_extension
+        # Save the image
+        cv2.imwrite(os.path.join(current_folder, new_filename), image)
+        print("[purple4][AUTOCLASS][/purple4] Image saved.")
+        return os.path.join(current_folder, new_filename)
     
     # Function to display an image
     def display_image(self, image=None, window_name="Output"):
@@ -198,7 +220,7 @@ class AutoClass:
     def resize_image_fixed(self, width=1000, height=1000):
         print("[purple4][AUTOCLASS][/purple4] Resizing image to fixed size...")
         self.image = cv2.resize(self.image, (width, height))
-        print(f"[purple4][AUTOCLASS][/purple4] Image resized to fixed size of {width}x{height}.")
+        print(f"[purple4][AUTOCLASS][/purple4] Image resized to fixed size of \"{width}x{height}\"")
     
     # Apply Euclidean Distance Transform to get distance map
     def get_distance_map(self):
