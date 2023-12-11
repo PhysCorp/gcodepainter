@@ -28,10 +28,10 @@ The following dependencies are required to run this project (included in `requir
 - [x] flask
 
 ## Other Info & Installation
-This project is currently in development. Please clone the git repository with `git clone https://github.com/PhysCorp/gcodepainter.git`.
+Please clone my git repository with `git clone https://github.com/PhysCorp/gcodepainter.git`.
 
 1. Ensure that python3, python3-pip, and anaconda are installed on your system. Anaconda can be retrieved from [here](https://www.anaconda.com/products/individual). If you are on Windows, you can install anaconda with [chocolatey](https://chocolatey.org/) using `choco install anaconda3`.
-2. Create a conda environment with `conda create --name gcodepainter python=3.8`.
+2. If not done from above, create a conda environment with `conda create --name gcodepainter python=3.8`.
 3. Activate the conda environment with `conda activate gcodepainter`.
 4. Install the requirements with `python3 -m pip install -r requirements.txt`.
 5. Run `python3 main.py` to start the program. By default, it launches the Flask GUI, available at `http://localhost:5000/`.
@@ -77,3 +77,6 @@ To view the generated GCODE, we include a link to view the GCODE on an open-sour
 ## Uninstall
 1. Deactivate the conda environment with `conda deactivate`.
 2. Remove the conda environment with `conda remove --name gcodepainter --all`.
+
+### More Info
+For more information, please also refer to the `docs` folder in the repository, which contains a project report!

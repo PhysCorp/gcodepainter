@@ -125,7 +125,7 @@ class WebUI:
             print("[indian_red1][WEBUI][/indian_red1] Showing demo welcome message...")
             # Display the program welcome message
             welcome_text = "Welcome to gcodepainter interactive demo"
-            text_content = "<p>To begin the demo, please select a file to upload.</p><p>Note: For photos, you MUST use a photo with a solid-white color background with as little noise as possible, and draw on the canvas with black marker or pen.</p><p>Don't know what to do? Upload one of our example images in the `examples` folder of the project!</p><hr>"
+            text_content = "<p>To begin the demo, please select a file to upload.</p><p>Note: For photos, you MUST use a photo with a solid-white color background with as little noise as possible, and draw on the canvas with black marker or pen. In addition, make sure the photo isn't too large as that takes MUCH more time to process.</p><p>Don't know what to do? Upload one of our example images in the `examples` folder of the project!</p><hr>"
             # Add a form to upload a png or jpg file
             text_content += "<form action='/demo.html' method='post' enctype='multipart/form-data' class='form-inline'><input type='hidden' name='task' value='2'><div class='form-group'><input type='file' name='file' accept='image/png, image/jpeg' class='form-control-file' required></div><span style='height: 12px; display: inline-block;'></span><button type='submit' class='btn btn-primary'><i data-feather='upload'></i> Upload</button></form>"
             # Return the heading and content
@@ -308,7 +308,7 @@ class WebUI:
             text_content += "<span style='width: 10px; display: inline-block;'></span><a class='btn btn-secondary' href='javascript:void(0)' onclick='copyToClipboard()'><i data-feather='clipboard'></i> Copy to clipboard and open in new tab</a>"
             text_content += "<script>function copyToClipboard() { var copyText = document.getElementById('gcode'); copyText.select(); copyText.setSelectionRange(0, 99999); document.execCommand('copy'); window.open('https://nraynaud.github.io/webgcode/', '_blank'); }</script>"
             # Button to download the gcode using f'<a href="{url_for("serve_custom_file", filename="output.gcode")}">'
-            text_content += "<span style='width: 10px; display: inline-block;'></span><a class='btn btn-secondary' class='no-load' href='" + url_for("serve_custom_file", filename="output.gcode") + "'><i data-feather='download'></i> Download gcode</a>"
+            text_content += "<span style='width: 10px; display: inline-block;'></span><a class='btn btn-secondary' class='no-load' href='" + url_for("serve_custom_file", filename="output.gcode") + "' target='_blank'><i data-feather='download'></i> Download gcode</a>"
             text_content += "</div>"
             return (welcome_text, text_content)
         elif task == "15":

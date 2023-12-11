@@ -153,7 +153,7 @@ if __name__ == "__main__":
     parse_arg(opts_dict, "input_pin", int(arguments.get("input_pin", 17 if opts_dict.get("pi_mode", False) else 0)))
     parse_arg(opts_dict, "execute", arguments.get("execute", False))
     parse_arg(opts_dict, "webui", arguments.get("webui", True))
-    parse_arg(opts_dict, "camera_bounds", str(arguments.get("camera_bounds", "(150,60)(515,435)")))
+    parse_arg(opts_dict, "camera_bounds", str(arguments.get("camera_bounds", "(0,0)(0,0)")))
 
     # Display all arguments in console
     print(f"Arguments: {opts_dict}\n")
